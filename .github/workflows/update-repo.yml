@@ -4,6 +4,7 @@ on:
   push:
     branches: [master]
   repository_dispatch:
+    types: [edge_release]
 
 # Secrets Required:
 # * AZURE_SERVICE_SDK_AUTH
