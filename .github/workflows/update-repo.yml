@@ -49,6 +49,8 @@ jobs:
       # - name: Receive Incoming
       #   run: eng/receive-incoming.sh
       - name: Update Workspace
+        env:
+          APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
         run: eng/update-workspace.sh
       - name: Pack Workspace
         env:
