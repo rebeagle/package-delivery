@@ -1,0 +1,70 @@
+name: Update Repository
+
+on:
+  push:
+    branches: [master]
+
+# Secrets Required:
+# * AZURE_SERVICE_SDK_AUTH
+# * GPG_SIGNING_KEY_CONTENT
+# * GPG_SIGNING_KEY_PASSWORD
+# * PACKAGE_CONTAINER_NAME
+# * PACKAGE_CONTAINER_SAS_TOKEN
+# * RESOURCE_GROUP_NAME
+# * STORAGE_ACCOUNT_NAME
+
+jobs:
+  update:
+    runs-on: ubuntu-20.04
+    env:
+      APTLY_REPO_NAME: main
+      APTLY_DISTRIBUTION: focal
+      APTLY_PREFIX: edge
+      GPG_SIGNING_KEY_FINGERPRINT: BD5EE0F05291F5F146F20018C45F0402B2C45BBF
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        env:
+          APTLY_VERSION: 1.4.0
+          APTLY_SHA256: 3f104975a3aa1ba8aa99a12ba5a0beecf1b2b1ed10cc8cc47d9aad92884b0072
+        run: eng/install-dependencies.sh
+      - name: Setup GPG
+        env:
+          SECRET_GPG_SIGNING_KEY_CONTENT: ${{ secrets.GPG_SIGNING_KEY_CONTENT }}
+          SECRET_GPG_SIGNING_KEY_PASSWORD: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
+        run: eng/init-gpg.sh
+      - name: Setup Azure
+        uses: azure/login@v1.1
+        with:
+          creds: ${{ secrets.AZURE_SERVICE_SDK_AUTH }}
+      - name: Prepare
+        env:
+          APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
+        run: eng/prepare.sh
+      - name: Unpack Workspace
+        env:
+          APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
+          SECRET_STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+        run: eng/unpack-workspace.sh
+      # - name: Receive Incoming
+      #   run: eng/receive-incoming.sh
+      - name: Update Workspace
+        run: eng/update-workspace.sh
+      - name: Pack Workspace
+        env:
+          APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
+          SECRET_STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+        run: eng/pack-workspace.sh
+      - name: Push to Storage
+        env:
+          APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
+          SECRET_STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
+          SECRET_CONTAINER_NAME: ${{ secrets.PACKAGE_CONTAINER_NAME }}
+          SECRET_SAS_TOKEN: ${{ secrets.PACKAGE_CONTAINER_SAS_TOKEN }}
+        run: eng/push-to-storage.sh
+      - name: Purge CDN
+        env:
+          SECRET_RESOURCE_GROUP_NAME: ${{ secrets.RESOURCE_GROUP_NAME }}
+          CDN_PROFILE_NAME: paranoid
+          CDN_ENDPOINT_NAME: rpackages
+        run: eng/purge-cdn.sh
