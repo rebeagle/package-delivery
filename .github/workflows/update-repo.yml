@@ -30,8 +30,8 @@ jobs:
         run: eng/install-dependencies.sh
       - name: Setup GPG
         env:
-          SECRET_GPG_SIGNING_KEY_CONTENT: ${{ secrets.GPG_SIGNING_KEY_CONTENT }}
-          SECRET_GPG_SIGNING_KEY_PASSWORD: ${{ secrets.GPG_SIGNING_KEY_PASSWORD }}
+          SECRET_GPG_SIGNING_KEY_CONTENT: ${{ secrets.GPG_INFRA_SIGNING_KEY_CONTENT }}
+          SECRET_GPG_SIGNING_KEY_PASSWORD: ${{ secrets.GPG_INFRA_SIGNING_KEY_PASSWORD }}
         run: eng/init-gpg.sh
       - name: Setup Azure
         uses: azure/login@v1.1
