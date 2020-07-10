@@ -3,6 +3,7 @@ name: Update Repository
 on:
   push:
     branches: [master]
+  repository_dispatch:
 
 # Secrets Required:
 # * AZURE_SERVICE_SDK_AUTH
