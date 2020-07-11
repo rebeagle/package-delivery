@@ -48,7 +48,11 @@ jobs:
           APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
           SECRET_STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
         run: eng/unpack-workspace.sh
-      # - name: Receive Incoming
+      - name: Receive Incoming Dispatch
+        run: |
+          echo '${{ github.event.client_payload }}'
+          echo ===
+          echo '${{ github.event_name }}'
       #   run: eng/receive-incoming.sh
       - name: Update Workspace
         env:
