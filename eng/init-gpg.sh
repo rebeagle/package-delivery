@@ -20,3 +20,7 @@ if [[ -z $SUB_KEYGRIP ]]; then
 fi
 
 /usr/lib/gnupg2/gpg-preset-passphrase -c "${SUB_KEYGRIP}" <<< "${SECRET_GPG_SIGNING_KEY_PASSWORD}"
+
+if [[ ! -e "${HOME}/.devscripts" ]]; then
+    echo "DEBSIGN_KEYID=${GPG_SIGNING_KEY_FINGERPRINT}" > "${HOME}/.devscripts"
+fi
