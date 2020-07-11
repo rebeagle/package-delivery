@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       APTLY_REPO_NAME: main
-      APTLY_DISTRIBUTION: focal
-      APTLY_PREFIX: edge
+      APTLY_DISTRIBUTION: focal-edge
+      APTLY_PREFIX: ubuntu
       GPG_SIGNING_KEY_FINGERPRINT: BD5EE0F05291F5F146F20018C45F0402B2C45BBF
     steps:
       - uses: actions/checkout@v2
