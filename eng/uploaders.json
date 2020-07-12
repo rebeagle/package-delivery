@@ -1,12 +1,14 @@
 {
     "groups": {
         "packagers": [
-            "FCA303FEDE5B39B883F57340AFCCABC05B517CBB"
+            "AFCCABC05B517CBB",
+            "D38CFC1E1F5FF89C",
+            "1A811DB9FC01E7E8"
         ]
     },
     "rules": [
         {
-            "condition": "Name",
+            "condition": "Distribution (focal)",
             "allow": [
                 "packagers"
             ]
