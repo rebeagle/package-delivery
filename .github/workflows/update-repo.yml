@@ -19,7 +19,7 @@ jobs:
   update:
     runs-on: ubuntu-20.04
     env:
-      APTLY_REPO_NAME: main
+      APTLY_REPO_NAME: focal-edge
       APTLY_DISTRIBUTION: focal-edge
       APTLY_PREFIX: ubuntu
       GPG_SIGNING_KEY_FINGERPRINT: BD5EE0F05291F5F146F20018C45F0402B2C45BBF
@@ -30,6 +30,12 @@ jobs:
           APTLY_VERSION: 1.4.0
           APTLY_SHA256: 3f104975a3aa1ba8aa99a12ba5a0beecf1b2b1ed10cc8cc47d9aad92884b0072
         run: eng/install-dependencies.sh
+      - name: Fetch Incoming Build
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        env:
+          DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: eng/fetch-incoming.sh
       - name: Setup GPG
         env:
           SECRET_GPG_SIGNING_KEY_CONTENT: ${{ secrets.GPG_INFRA_SIGNING_KEY_CONTENT }}
@@ -48,12 +54,8 @@ jobs:
           APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace
           SECRET_STORAGE_ACCOUNT_NAME: ${{ secrets.STORAGE_ACCOUNT_NAME }}
         run: eng/unpack-workspace.sh
-      - name: Receive Incoming Dispatch
-        run: |
-          echo '${{ github.event.client_payload }}'
-          echo ===
-          echo '${{ github.event_name }}'
-      #   run: eng/receive-incoming.sh
+      - name: Process Incoming
+        run: eng/process-incoming.sh
       - name: Update Workspace
         env:
           APTLY_WORKSPACE: ${{ runner.temp }}/aptly-workspace

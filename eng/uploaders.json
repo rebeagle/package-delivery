@@ -1,0 +1,15 @@
+{
+    "groups": {
+        "packagers": [
+            "FCA303FEDE5B39B883F57340AFCCABC05B517CBB"
+        ]
+    },
+    "rules": [
+        {
+            "condition": "Name",
+            "allow": [
+                "packagers"
+            ]
+        }
+    ]
+}
